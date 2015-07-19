@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.db import connection
 
@@ -20,7 +20,6 @@ class ProductManager(models.Manager):
             all_products_id.append(product.id)
 
         return all_products_id 
-
 
 class Product(models.Model):
     """Product产品线
@@ -87,7 +86,7 @@ class CalendarEventManager(models.Manager):
         end_time = "%s 00:00:00" % (end_time)
 
         cursor = connection.cursor()
-        sql = 'SELECT id,name,start_time,end_time,description FROM hachi_calendarevent WHERE start_time > "%s" AND end_time < "%s"; ' % (start_time, end_time)
+        sql = 'SELECT id,name,start_time,end_time,description FROM hachi_calendarevent WHERE start_time >= "%s" AND end_time <= "%s"; ' % (start_time, end_time)
 
         cursor.execute(sql)
         calendar_events = []

@@ -20,9 +20,9 @@ import hachi.views
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^test/', hachi.views.test, name='test'),
-    url(r'^calendar/', hachi.views.fullCalendar, name='fullCalendar'),
+    url(r'^calendar/', hachi.views.full_calendar, name='fullCalendar'),
     url(r'^createEvent/', hachi.views.create_event, name='createEvent'),
-    url(r'^getEvents/', hachi.views.getEvents, name='getEvents'),
-    url(r'^getEventDescription/', hachi.views.getEventDescription, name='getEventDescription'),
-    url(r'^timeBill/', hachi.views.timeBill, name='timeBill'),
+    url(r'^getEvents/', hachi.views.get_events, name='getEvents'),
+    url(r'^getEventDescription/', hachi.views.get_event_description, name='getEventDescription'),
+    url(r'^timeBill/', hachi.views.time_bill, name='timeBill'),
 ]
