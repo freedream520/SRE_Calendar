@@ -159,7 +159,7 @@ class TimeBill:
                 total_time += time_bill[n]
             average_time_bill.append(total_time) 
 
-        return average_time_bill 
+        return average_time_bill
 
     @staticmethod
     def get_operation_total_time_list(product_time_bill):

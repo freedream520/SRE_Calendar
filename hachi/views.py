@@ -98,76 +98,107 @@ def get_event_description(request):
     else : 
         return HttpResponse(returnJson(False, "Request's method is not GET in get_event_description"))
 
-def time_bill(request):
-    """展示时间统计表
+def product_time_bill(request):
+    """展示Product的时间统计表
     """
     if request.method == 'GET':
         try:
+            product_id = int(request.GET['id'])
             time_bill = TimeBill('2015-05-20', 6)
-
             weeklist = time_bill.get_weeklist()
-            product_time_bill = time_bill.get_product_time_bill(1)
+            product_time_bill = time_bill.get_product_time_bill(product_id)
             product_average_time_bill = TimeBill.get_average_time_bill(product_time_bill)
             operation_total_time_list = TimeBill.get_operation_total_time_list(product_time_bill)
 
-            return render_to_response('time_bill.html', {
+            return render_to_response('product_time_bill.html', {
                 'weeklist' : weeklist, 
                 'product_time_bill' : product_time_bill,
                 'product_average_time_bill' : product_average_time_bill,
                 'operation_total_time_list' : operation_total_time_list,
             })
         except Exception as e: 
-            return HttpResponse(returnJson(False, "%s in time_bill" % (e)))
+            return HttpResponse(returnJson(False, "%s in product_time_bill" % (e)))
     else : 
-        return HttpResponse(returnJson(False, "Request's method is not GET in time_bill"))
+        return HttpResponse(returnJson(False, "Request's method is not GET in product_time_bill"))
+
+def time_bill(request):
+    """展示Product的时间统计表
+    """
+    try:
+        time_bill = TimeBill('2015-05-20', 6)
+        weeklist = time_bill.get_weeklist()
+
+        all_products_id = Product.objects.get_all_products_id()
+
+        all_products_time_bill = {}
+        for product_id in all_products_id:
+            product_name = Product.objects.get(id=product_id).name
+            product_time_bill = time_bill.get_product_time_bill(product_id)
+            product_average_time_bill = TimeBill.get_average_time_bill(product_time_bill)
+            operation_total_time_list = TimeBill.get_operation_total_time_list(product_time_bill)
+
+            all_products_time_bill[product_name] = {
+                'product_time_bill' : product_time_bill,
+                'product_average_time_bill' : product_average_time_bill,
+                'operation_total_time_list' : operation_total_time_list,
+            }
+
+        # return HttpResponse(json.dumps(all_products_time_bill))
+        return render_to_response('time_bill.html', {
+            'weeklist' : weeklist, 
+            'all_products_time_bill' : all_products_time_bill, 
+        })
+    except Exception as e: 
+        return HttpResponse(returnJson(False, "%s in time_bill" % (e)))
 
 def test(request):
     """各种测试函数
     """
-    # calendar_event = CalendarEvent()
-    # calendar_event.name = '测试1'
-    # calendar_event.product_id = 1
-    # calendar_event.operation_id = 6
-    # calendar_event.username = 'chenhuan'
-    # calendar_event.start_time = datetime.datetime.strptime("2015-05-26 01:00:00", '%Y-%m-%d %H:%M:%S')
-    # calendar_event.end_time = datetime.datetime.strptime('2015-05-26 02:30:00', '%Y-%m-%d %H:%M:%S')
-    # calendar_event.save()
+    for product_id in range(2, 6):
+        calendar_event = CalendarEvent()
+        calendar_event.name = '测试1'
+        calendar_event.product_id = product_id
+        calendar_event.operation_id = 6
+        calendar_event.username = 'chenhuan'
+        calendar_event.start_time = datetime.datetime.strptime("2015-05-26 01:00:00", '%Y-%m-%d %H:%M:%S')
+        calendar_event.end_time = datetime.datetime.strptime('2015-05-26 02:30:00', '%Y-%m-%d %H:%M:%S')
+        calendar_event.save()
 
-    # calendar_event = CalendarEvent()
-    # calendar_event.name = '测试2'
-    # calendar_event.product_id = 1
-    # calendar_event.operation_id = 2
-    # calendar_event.username = 'chenhuan'
-    # calendar_event.start_time = datetime.datetime.strptime("2015-06-01 01:00:00", '%Y-%m-%d %H:%M:%S')
-    # calendar_event.end_time = datetime.datetime.strptime('2015-06-01 02:00:00', '%Y-%m-%d %H:%M:%S')
-    # calendar_event.save()
+        calendar_event = CalendarEvent()
+        calendar_event.name = '测试2'
+        calendar_event.product_id = product_id
+        calendar_event.operation_id = 2
+        calendar_event.username = 'chenhuan'
+        calendar_event.start_time = datetime.datetime.strptime("2015-06-01 01:00:00", '%Y-%m-%d %H:%M:%S')
+        calendar_event.end_time = datetime.datetime.strptime('2015-06-01 02:00:00', '%Y-%m-%d %H:%M:%S')
+        calendar_event.save()
 
-    # calendar_event = CalendarEvent()
-    # calendar_event.name = '测试2'
-    # calendar_event.product_id = 1
-    # calendar_event.operation_id = 1
-    # calendar_event.username = 'chenhuan'
-    # calendar_event.start_time = datetime.datetime.strptime("2015-06-06 01:00:00", '%Y-%m-%d %H:%M:%S')
-    # calendar_event.end_time = datetime.datetime.strptime('2015-06-06 02:00:00', '%Y-%m-%d %H:%M:%S')
-    # calendar_event.save()
+        calendar_event = CalendarEvent()
+        calendar_event.name = '测试2'
+        calendar_event.product_id = product_id
+        calendar_event.operation_id = 1
+        calendar_event.username = 'chenhuan'
+        calendar_event.start_time = datetime.datetime.strptime("2015-06-06 01:00:00", '%Y-%m-%d %H:%M:%S')
+        calendar_event.end_time = datetime.datetime.strptime('2015-06-06 02:00:00', '%Y-%m-%d %H:%M:%S')
+        calendar_event.save()
 
-    # calendar_event = CalendarEvent()
-    # calendar_event.name = '测试3'
-    # calendar_event.product_id = 1
-    # calendar_event.operation_id = 3
-    # calendar_event.username = 'chenhuan'
-    # calendar_event.start_time = datetime.datetime.strptime("2015-06-11 01:00:00", '%Y-%m-%d %H:%M:%S')
-    # calendar_event.end_time = datetime.datetime.strptime('2015-06-11 02:00:00', '%Y-%m-%d %H:%M:%S')
-    # calendar_event.save()
+        calendar_event = CalendarEvent()
+        calendar_event.name = '测试3'
+        calendar_event.product_id = product_id
+        calendar_event.operation_id = 3
+        calendar_event.username = 'chenhuan'
+        calendar_event.start_time = datetime.datetime.strptime("2015-06-11 01:00:00", '%Y-%m-%d %H:%M:%S')
+        calendar_event.end_time = datetime.datetime.strptime('2015-06-11 02:00:00', '%Y-%m-%d %H:%M:%S')
+        calendar_event.save()
 
-    # calendar_event = CalendarEvent()
-    # calendar_event.name = '测试4'
-    # calendar_event.product_id = 1
-    # calendar_event.operation_id = 4
-    # calendar_event.username = 'chenhuan'
-    # calendar_event.start_time = datetime.datetime.strptime("2015-06-16 04:00:00", '%Y-%m-%d %H:%M:%S')
-    # calendar_event.end_time = datetime.datetime.strptime('2015-06-16 06:00:00', '%Y-%m-%d %H:%M:%S')
-    # calendar_event.save()
+        calendar_event = CalendarEvent()
+        calendar_event.name = '测试4'
+        calendar_event.product_id = product_id
+        calendar_event.operation_id = 4
+        calendar_event.username = 'chenhuan'
+        calendar_event.start_time = datetime.datetime.strptime("2015-06-16 04:00:00", '%Y-%m-%d %H:%M:%S')
+        calendar_event.end_time = datetime.datetime.strptime('2015-06-16 06:00:00', '%Y-%m-%d %H:%M:%S')
+        calendar_event.save()
 
     time_bill = TimeBill('2015-05-20', 5)
     product_time_bill = time_bill.get_product_time_bill(1)

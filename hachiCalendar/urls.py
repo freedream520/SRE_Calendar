@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^createEvent/', hachi.views.create_event, name='createEvent'),
     url(r'^getEvents/', hachi.views.get_events, name='getEvents'),
     url(r'^getEventDescription/', hachi.views.get_event_description, name='getEventDescription'),
+    url(r'^productTimeBill/', hachi.views.product_time_bill, name='productTimeBill'),
     url(r'^timeBill/', hachi.views.time_bill, name='timeBill'),
 ]

@@ -125,7 +125,10 @@ class CalendarEventManager(models.Manager):
             end_time = row[1]
             total_time += end_time - start_time
 
-        return total_time.total_seconds()/3600
+        if total_time.total_seconds() == 0:
+            return 0.1
+        else: 
+            return total_time.total_seconds()/3600
        
 class CalendarEvent(models.Model):
     """CalendarEvent

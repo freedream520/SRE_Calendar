@@ -9,83 +9,72 @@
 <link href="{% static "highcharts/highcharts.css" %}" rel='stylesheet' media='print' />
 
 <script type="text/javascript">
-$(function () {
-    $('#container').highcharts({
-        title: {
-            text: '时间轴'
-        },
-        xAxis: {
-             categories: {{  weeklist|safe }}
-        },
-        labels: {
-            items: [{
-                html: '时间轴',
-                style: {
-                    left: '50px',
-                    top: '18px',
-                    color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
-                }
-            }]
-        },
-        series: [
-        {% for operation_name,time_bill in product_time_bill.items  %}
-            {
-                type: 'column',
-                name: "{{ operation_name }}",
-                data: {{ time_bill }}
+    $(function () {
+        {% for product_name,time_bill_info in all_products_time_bill.items  %}
+        $('#container_{{ product_name }}').highcharts({
+            title: {
+                text: '{{ product_name }}'
             },
-        {% endfor %}
-        {
-            type: 'spline',
-            name: 'Average',
-            // data: [3, 2.67, 3, 6.33, 3.33, 2],
-             data: {{ product_average_time_bill }},
-            marker: {
-                lineWidth: 2,
-                lineColor: Highcharts.getOptions().colors[3],
-                fillColor: 'white'
-            }
-        }, 
-        {
-            type: 'pie',
-            name: 'Total consumption',
-            data: [
-                {% for operation_name,total_time in operation_total_time_list.items  %}
-                {
-                    name: '{{ operation_name }}',
-                    y: {{ total_time }},
-                    // color: Highcharts.getOptions().colors[0] // Jane's color
-                },
+            xAxis: {
+                 categories: {{ weeklist|safe }}
+            },
+            labels: {
+                items: [{
+                    html: '{{ product_name }}',
+                    style: {
+                        left: '50px',
+                        top: '18px',
+                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                    }
+                }]
+            },
+            series: [
+                {% for operation_name,time_bill in time_bill_info.product_time_bill.items  %}
+                    {
+                        type: 'column',
+                        name: "{{ operation_name }}",
+                        data: {{ time_bill }}
+                    },
                 {% endfor %}
-
-                // {
-                //     name: 'Jane',
-                //     y: 13,
-                //     color: Highcharts.getOptions().colors[0] // Jane's color
-                // }, 
-                // {
-                //     name: 'John',
-                //     y: 23,
-                //     color: Highcharts.getOptions().colors[1] // John's color
-                // }, 
-                // {
-                //     name: 'Joe',
-                //     y: 19,
-                //     color: Highcharts.getOptions().colors[2] // Joe's color
-                // }
-            ],
-            center: [100, 80],
-            size: 100,
-            showInLegend: false,
-            dataLabels: {
-                enabled: false
-            }
-        }]
+                {
+                    type: 'spline',
+                    name: 'Average',
+                    data: {{ time_bill_info.product_average_time_bill }},
+                    marker: {
+                        lineWidth: 3,
+                        lineColor: Highcharts.getOptions().colors[3],
+                        fillColor: 'white'
+                    }
+                }, 
+                {
+                    type: 'pie',
+                    name: 'Total consumption',
+                    data: [
+                        {% for operation_name,total_time in time_bill_info.operation_total_time_list.items  %}
+                        {
+                            name: '{{ operation_name }}',
+                            y: {{ total_time }},
+                        },
+                        {% endfor %}
+                    ],
+                    center: [100, 80],
+                    size: 100,
+                    showInLegend: false,
+                    dataLabels: {
+                        enabled: false
+                    },
+                },
+            ]
+        });
+        {% endfor %}
     });
-});
 </script>
+
 </head>
 <body>
-    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    {% for product_name in all_products_time_bill  %}
+    <div id="container_{{ product_name }}" style="min-width: 310px; height: 400px; margin: 0 auto">
+    </div>
+    {% endfor %}
 </body>
 </html>
