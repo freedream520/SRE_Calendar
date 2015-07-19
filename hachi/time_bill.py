@@ -76,32 +76,124 @@ class TimeBill:
 
             例子：
             [
-                {'扩容ID' : [1, 2, 3, 4, 5...]},
-                {'搭建ID' : [1, 2, 3, 4, 5...]},
-                {'学习ID' : [1, 2, 3, 4, 5...]},
+                {'扩容' : [1, 2, 3, 4, 5...]},
+                {'搭建' : [1, 2, 3, 4, 5...]},
+                {'学习' : [1, 2, 3, 4, 5...]},
                 ...
-
             ]     
         """
-        # 获取全部operations ID
         all_operations_id = Operation.objects.get_all_operations_id()
-
-        product_time_bill = [] 
+        product_time_bill = {}
         for operation_id in all_operations_id:
             total_times = []
             for week in self.weeklist:
-                total_time = CalendarEvent.objects.get_event_time(product_id, 
-                    operation_id, week['start'], end['end'])
+                total_time = CalendarEvent.objects.get_product_operation_total_time(product_id, 
+                    operation_id, week['start'], week['end'])
                 total_times.append(total_time) 
-            product_time_bill.append({str(operation_id) : total_times}) 
+            product_time_bill[Operation.objects.get(id=operation_id).name] = total_times
 
         return product_time_bill 
 
+    def __translate_date(self, date):
+        """将2015-07-19转成7月19
 
+        Args:
+            date: String类型, 例子: '2015-07-19'
 
+        Returns:
+            字符串 例子: '7月19'
+        """
+        # month = date.split('-')[1].strip('0')
+        month = date.split('-')[1]
+        day = date.split('-')[2]
 
+        return "%s%s" % (month, day)
 
+    def get_weeklist(self):
+        """返回供highchart展示的weeklist
 
+        Returns: 
+            weeklist: 列表
 
+            例子:['6月22-6月26', '6月29-7月03', '7月06-7月10', '7月13-7月17', '7月20-7月24', '7月27-7月31']
+        """
+        new_weeklist = []
+        for time_zone in self.weeklist:
+            # 将2015-07-19 00:00:00转成7月19
+            start_time = self.__translate_date(time_zone['start'].split(' ')[0])
+            end_time = self.__translate_date(time_zone['end'].split(' ')[0])
+            new_weeklist.append("%s~%s" % (start_time, end_time))
+        return new_weeklist 
 
+    @staticmethod
+    def get_average_time_bill(product_time_bill):
+        """返回product_time_bill的平均time_bill
 
+        Args:
+            product_time_bill
+
+            例子:
+            {
+                'DStream' : [1, 2, 3, 4, 5, 6],
+                'Bigpipe' : [1, 2, 3, 4, 5, 6],
+                'TM' : [1, 2, 3, 4, 5, 6],
+                ......
+
+            }
+
+        Returns: 
+            average_time_bill
+
+            例子:
+            [1, 2, 3, 4, 5, 6]
+        """
+        length = 0
+        for operation,time_bill in product_time_bill.items():
+            length = len(time_bill) 
+            break
+
+        average_time_bill = []
+        for n in range(length):
+            total_time = 0
+            for operation,time_bill in product_time_bill.items():
+                total_time += time_bill[n]
+            average_time_bill.append(total_time) 
+
+        return average_time_bill 
+
+    @staticmethod
+    def get_operation_total_time_list(product_time_bill):
+        """返回product_time_bill每种operation总时间
+
+        Args:
+            product_time_bill
+
+            例子:
+            {
+                'DStream' : [1, 2, 3, 4, 5, 6],
+                'Bigpipe' : [1, 2, 3, 4, 5, 6],
+                'TM' : [1, 2, 3, 4, 5, 6],
+                ......
+
+            }
+
+        Returns: 
+            average_time_bill
+
+            例子:
+            {
+                'DStream' : 21,
+                'Bigpipe' : 21,
+                'TM' : 21,
+                ......
+
+            }
+        """
+        operation_total_time_list = {} 
+        for operation,time_bill in product_time_bill.items():
+            total_time = 0
+            for time in time_bill:
+                total_time += time
+            operation_total_time_list[operation]  = total_time
+
+        return operation_total_time_list

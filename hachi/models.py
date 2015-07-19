@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.db import connection
+import datetime
 
 # Create your models here.
 class ProductManager(models.Manager):
@@ -40,14 +41,13 @@ class OperationManager(models.Manager):
         Returns: 
             all_operations_id: 列表
         """
-        all_operations = Operation.objects.all()
+        all_operations = super(OperationManager, self).all()
 
         all_operations_id = []
         for operation in all_operations:
             all_operations_id.append(operation.id)
 
         return all_operations_id
-
 
 class Operation(models.Model):
     """操作类型
@@ -101,7 +101,31 @@ class CalendarEventManager(models.Manager):
             }
             calendar_events.append(calendar_event)
             
-        return calendar_events 
+        return calendar_events() 
+
+    def get_product_operation_total_time(self, product_id, operation_id, start_time, end_time):
+        """返回product在start_time和end_time时间段内，operation类型操作占用总时间
+
+        Args: 
+            product_id: int类型
+            operation_id: int类型
+            start_time: string类型, 例子: "2015-07-19 00:00:00"
+            end_time: string类型, 例子: "2015-07-19 02:00:00"
+
+        Returns:
+            float类型: 2.5小时
+        """
+        cursor = connection.cursor()
+        sql = 'SELECT start_time,end_time FROM hachi_calendarevent WHERE product_id = %d AND operation_id = %d AND start_time >= "%s" AND end_time <= "%s"; ' % (product_id, operation_id, start_time, end_time)
+
+        cursor.execute(sql)
+        total_time =  datetime.timedelta(0)
+        for row in cursor.fetchall():
+            start_time = row[0]
+            end_time = row[1]
+            total_time += end_time - start_time
+
+        return total_time.total_seconds()/3600
        
 class CalendarEvent(models.Model):
     """CalendarEvent
