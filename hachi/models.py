@@ -129,6 +129,32 @@ class CalendarEventManager(models.Manager):
             return 0.1
         else: 
             return total_time.total_seconds()/3600
+
+    def get_operation_total_time(self, operation_id, start_time, end_time):
+        """返回operation在start_time和end_time之间的总书剑
+
+        Args: 
+            operation_id: int类型
+            start_time: string类型, 例子: "2015-07-19 00:00:00"
+            end_time: string类型, 例子: "2015-07-19 02:00:00"
+
+        Returns:
+            float类型: 2.5小时
+        """
+        cursor = connection.cursor()
+        sql = 'SELECT start_time,end_time FROM hachi_calendarevent WHERE operation_id = %d AND start_time >= "%s" AND end_time <= "%s"; ' % (operation_id, start_time, end_time)
+
+        cursor.execute(sql)
+        total_time =  datetime.timedelta(0)
+        for row in cursor.fetchall():
+            start_time = row[0]
+            end_time = row[1]
+            total_time += end_time - start_time
+
+        if total_time.total_seconds() == 0:
+            return 0.1
+        else: 
+            return total_time.total_seconds()/3600
        
 class CalendarEvent(models.Model):
     """CalendarEvent

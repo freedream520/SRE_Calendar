@@ -128,9 +128,9 @@ def time_bill(request):
         time_bill = TimeBill('2015-05-20', 6)
         weeklist = time_bill.get_weeklist()
 
-        all_products_id = Product.objects.get_all_products_id()
-
+        # 获取各产品线的time_bill
         all_products_time_bill = {}
+        all_products_id = Product.objects.get_all_products_id()
         for product_id in all_products_id:
             product_name = Product.objects.get(id=product_id).name
             product_time_bill = time_bill.get_product_time_bill(product_id)
@@ -143,6 +143,23 @@ def time_bill(request):
                 'operation_total_time_list' : operation_total_time_list,
             }
 
+        # 获取各Operation总的time_bill 
+        all_operation_time_bill = {}
+        all_operations_id = Operation.objects.get_all_operations_id()
+        for operation_id in all_operations_id:
+            operation_time_bill = time_bill.get_operation_time_bill(operation_id)
+            all_operation_time_bill[Operation.objects.get(id=operation_id).name] = operation_time_bill
+
+        operation_average_time_bill = TimeBill.get_average_time_bill(all_operation_time_bill)
+        operation_total_time_list = TimeBill.get_operation_total_time_list(all_operation_time_bill)
+
+        all_products_time_bill['操作'] = {
+            'product_time_bill' : all_operation_time_bill,
+            'product_average_time_bill' : operation_average_time_bill,
+            'operation_total_time_list' : operation_total_time_list,
+        }
+
+        # return HttpResponse(json.dumps(all_operation_time_bill)) 
         # return HttpResponse(json.dumps(all_products_time_bill))
         return render_to_response('time_bill.html', {
             'weeklist' : weeklist, 
@@ -153,6 +170,7 @@ def time_bill(request):
 
 def test(request):
     """各种测试函数
+    """
     """
     for product_id in range(2, 6):
         calendar_event = CalendarEvent()
@@ -199,6 +217,7 @@ def test(request):
         calendar_event.start_time = datetime.datetime.strptime("2015-06-16 04:00:00", '%Y-%m-%d %H:%M:%S')
         calendar_event.end_time = datetime.datetime.strptime('2015-06-16 06:00:00', '%Y-%m-%d %H:%M:%S')
         calendar_event.save()
+    """
 
     time_bill = TimeBill('2015-05-20', 5)
     product_time_bill = time_bill.get_product_time_bill(1)

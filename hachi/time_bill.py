@@ -87,12 +87,30 @@ class TimeBill:
         for operation_id in all_operations_id:
             total_times = []
             for week in self.weeklist:
-                total_time = CalendarEvent.objects.get_product_operation_total_time(product_id, 
-                    operation_id, week['start'], week['end'])
+                total_time = CalendarEvent.objects.get_product_operation_total_time(product_id, operation_id, week['start'], week['end'])
                 total_times.append(total_time) 
             product_time_bill[Operation.objects.get(id=operation_id).name] = total_times
 
         return product_time_bill 
+
+    def get_operation_time_bill(self, operation_id):
+        """返回weeklist段内各操作的用时
+
+        Args:
+            operation_id: int类似 Operation ID
+
+        Returns: 
+            operation_time_bill: 数据
+
+            例子：
+            {'扩容' : [1, 2, 3, 4, 5...]},
+        """
+        time_bill = []
+        for week in self.weeklist:
+            total_time = CalendarEvent.objects.get_operation_total_time(operation_id, week['start'], week['end'])
+            time_bill.append(total_time)
+
+        return time_bill
 
     def __translate_date(self, date):
         """将2015-07-19转成7月19
@@ -157,7 +175,7 @@ class TimeBill:
             total_time = 0
             for operation,time_bill in product_time_bill.items():
                 total_time += time_bill[n]
-            average_time_bill.append(total_time) 
+            average_time_bill.append(int(total_time))
 
         return average_time_bill
 
