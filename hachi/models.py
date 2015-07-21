@@ -101,7 +101,7 @@ class CalendarEventManager(models.Manager):
             }
             calendar_events.append(calendar_event)
             
-        return calendar_events() 
+        return calendar_events 
 
     def get_product_operation_total_time(self, product_id, operation_id, start_time, end_time):
         """返回product在start_time和end_time时间段内，operation类型操作占用总时间

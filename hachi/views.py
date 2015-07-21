@@ -104,7 +104,7 @@ def product_time_bill(request):
     if request.method == 'GET':
         try:
             product_id = int(request.GET['id'])
-            time_bill = TimeBill('2015-05-20', 6)
+            time_bill = TimeBill('2015-05-20', 5)
             weeklist = time_bill.get_weeklist()
             product_time_bill = time_bill.get_product_time_bill(product_id)
             product_average_time_bill = TimeBill.get_average_time_bill(product_time_bill)
@@ -125,7 +125,7 @@ def time_bill(request):
     """展示Product的时间统计表
     """
     try:
-        time_bill = TimeBill('2015-05-20', 6)
+        time_bill = TimeBill('2015-05-20', 5)
         weeklist = time_bill.get_weeklist()
 
         # 获取各产品线的time_bill
@@ -218,7 +218,6 @@ def test(request):
         calendar_event.end_time = datetime.datetime.strptime('2015-06-16 06:00:00', '%Y-%m-%d %H:%M:%S')
         calendar_event.save()
     """
-
     time_bill = TimeBill('2015-05-20', 5)
     product_time_bill = time_bill.get_product_time_bill(1)
     average_time_bill = TimeBill.get_average_time_bill(product_time_bill)
