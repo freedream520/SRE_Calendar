@@ -180,6 +180,8 @@ def time_bill_by_echart(request):
         all_products_id = Product.objects.get_all_products_id()
         for product_id in all_products_id:
             product_name = Product.objects.get(id=product_id).name
+            if product_name == u'学习':
+                continue
             product_time_bill = time_bill.get_product_time_bill(product_id)
             product_average_time_bill = TimeBill.get_average_time_bill(product_time_bill)
             operation_total_time_list = TimeBill.get_operation_total_time_list(product_time_bill)
