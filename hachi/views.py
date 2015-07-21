@@ -168,6 +168,60 @@ def time_bill(request):
     except Exception as e: 
         return HttpResponse(returnJson(False, "%s in time_bill" % (e)))
 
+def time_bill_by_echart(request):
+    """展示Product的时间统计表
+    """
+    try:
+        time_bill = TimeBill('2015-05-20', 5)
+        weeklist = time_bill.get_weeklist()
+
+        # 获取各产品线的time_bill
+        all_products_time_bill = {}
+        all_products_id = Product.objects.get_all_products_id()
+        for product_id in all_products_id:
+            product_name = Product.objects.get(id=product_id).name
+            product_time_bill = time_bill.get_product_time_bill(product_id)
+            product_average_time_bill = TimeBill.get_average_time_bill(product_time_bill)
+            operation_total_time_list = TimeBill.get_operation_total_time_list(product_time_bill)
+
+            all_products_time_bill[product_name] = {
+                'product_time_bill' : product_time_bill,
+                'product_average_time_bill' : product_average_time_bill,
+                'operation_total_time_list' : operation_total_time_list,
+            }
+
+        # 获取各Operation总的time_bill 
+        all_operation_time_bill = {}
+        all_operations_id = Operation.objects.get_all_operations_id()
+        for operation_id in all_operations_id:
+            operation_time_bill = time_bill.get_operation_time_bill(operation_id)
+            all_operation_time_bill[Operation.objects.get(id=operation_id).name] = operation_time_bill
+
+        operation_average_time_bill = TimeBill.get_average_time_bill(all_operation_time_bill)
+        operation_total_time_list = TimeBill.get_operation_total_time_list(all_operation_time_bill)
+
+        all_products_time_bill['操作'] = {
+            'product_time_bill' : all_operation_time_bill,
+            'product_average_time_bill' : operation_average_time_bill,
+            'operation_total_time_list' : operation_total_time_list,
+        }
+
+        # all_operations_name = Operation.objects.get_all_operations_name()
+        all_operations_name = ['集群扩容','权限审批','问题排查','机器报修','集群搭建','其他'] 
+
+        # return HttpResponse(json.dumps(all_operations_name)) 
+        # return HttpResponse(json.dumps(all_operation_time_bill)) 
+        # return HttpResponse(json.dumps(all_products_time_bill))
+        return render_to_response('time_bill_by_echart.html', {
+            'weeklist' : weeklist, 
+            'all_operations_name' : all_operations_name,
+            'all_products_time_bill' : all_products_time_bill, 
+        })
+    except Exception as e: 
+        return HttpResponse(returnJson(False, "%s in time_bill" % (e)))
+
+    return render_to_response('time_bill_by_echart.html')
+
 def test(request):
     """各种测试函数
     """

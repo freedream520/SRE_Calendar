@@ -34,6 +34,19 @@ class Product(models.Model):
 class OperationManager(models.Manager):
     """Operartion的Manager
     """
+    def get_all_operations_name(self):
+        """返回所有Operation的Name
+
+        Returns: 
+            all_operations_name: 列表
+        """
+        all_operations = super(OperationManager, self).all()
+
+        all_operations_name = []
+        for operation in all_operations:
+            all_operations_name.append(u"operation.name")
+
+        return all_operations_name
 
     def get_all_operations_id(self):
         """返回所有Operation的ID
@@ -125,10 +138,7 @@ class CalendarEventManager(models.Manager):
             end_time = row[1]
             total_time += end_time - start_time
 
-        if total_time.total_seconds() == 0:
-            return 0.1
-        else: 
-            return total_time.total_seconds()/3600
+        return total_time.total_seconds()/3600
 
     def get_operation_total_time(self, operation_id, start_time, end_time):
         """返回operation在start_time和end_time之间的总书剑
@@ -151,10 +161,7 @@ class CalendarEventManager(models.Manager):
             end_time = row[1]
             total_time += end_time - start_time
 
-        if total_time.total_seconds() == 0:
-            return 0.1
-        else: 
-            return total_time.total_seconds()/3600
+        return total_time.total_seconds()/3600
        
 class CalendarEvent(models.Model):
     """CalendarEvent

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+{% load staticfiles %}
+<!-- fullCalendar -->
+<script src="{% static "fullcalendar/lib/jquery.min.js" %}"></script>
+<!-- Bootstrap -->
+<link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+<link rel="stylesheet" href="{% static "bootstrap/css/bootstrap-theme.min.css" %}">
+<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+</head>
+<body>
+    <div class="container">
+        {% for product_name in all_products_time_bill  %}
+        <div class="row">
+            <div class="col-md-6" id="{{ product_name }}_bar" style="height:400px"> </div>
+            <div class="col-md-6" id="{{ product_name }}_pie" style="height:400px"> </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <!-- ECharts单文件引入 -->
+    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+
+    <script type="text/javascript">
+        // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+        // 使用
+        require(
+            [
+                'echarts',
+                'echarts/chart/bar', // 使用柱状图就加载bar模块，按需加载
+                'echarts/chart/pie', // 使用柱状图就加载bar模块，按需加载
+            ],
+
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                {% for product_name,time_bill_info in all_products_time_bill.items  %}
+                var myChart = ec.init(document.getElementById('{{ product_name }}_bar')); 
+                    option = {
+                        title : {
+                            text: '{{ product_name }}展示图',
+                            subtext: '用时分布',
+                            x:'center'
+                        },
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            orient : 'vertical',
+                            x : 'left',
+                            // data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                            data: {{ all_operations_name|safe }}
+                        },
+                        calculable : true,
+                        series : [
+                            {
+                                name:'访问来源',
+                                type:'pie',
+                                radius : '55%',
+                                center: ['50%', 225],
+                                data:[
+                                    {% for operation_name,total_time in time_bill_info.operation_total_time_list.items  %}
+                                        {value:{{ total_time }}, name:'{{ operation_name }}'},
+                                    {% endfor %}
+                                ]
+                            }
+                        ]
+                    };
+                myChart.setOption(option);
+
+                var myChart2 = ec.init(document.getElementById('{{ product_name }}_pie'));
+                option2 = {
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {
+                            type: 'shadow'
+                        }
+                    },
+                    legend: {
+                        // data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                        data: {{ all_operations_name|safe }}
+                    },
+                    toolbox: {
+                        show : true,
+                        orient : 'vertical',
+                        y : 'center',
+                        feature : {
+                            mark : {show: true},
+                            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    calculable : true,
+                    xAxis : [
+                        {
+                            type : 'category',
+                            data : {{ weeklist|safe }}
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value',
+                            splitArea : {show : true}
+                        }
+                    ],
+                    grid: {
+                        x2:40
+                    },
+                    series : [
+
+                        {% for operation_name,time_bill in time_bill_info.product_time_bill.items  %}
+                            {
+                                name: "{{ operation_name }}",
+                                type: 'bar',
+                                stack: '总量',
+                                data: {{ time_bill }}
+                            },
+                        {% endfor %}
+                    ]
+                };
+                myChart2.setOption(option2);
+                
+                myChart.connect(myChart2);
+                myChart2.connect(myChart);
+                setTimeout(function (){
+                    window.onresize = function () {
+                        myChart.resize();
+                        myChart2.resize();
+                    }
+                },200) 
+                {% endfor %}
+            }
+        );
+    </script>
+</body>
+</html>
