@@ -121,3 +121,5 @@ class CalendarTestCase(TestCase):
         time_bill = TimeBill('2015-05-20', 5)
         self.assertEqual(time_bill.get_product_time_bill(1), result)
 
+
+
