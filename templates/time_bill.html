@@ -1,13 +1,14 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="zh-CN">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 {% load staticfiles %}
 <!-- fullCalendar -->
 <script src="{% static "fullcalendar/lib/jquery.min.js" %}"></script>
 <script src="{% static "highcharts/highcharts.js" %}"></script>
 <link href="{% static "highcharts/highcharts.css" %}" rel='stylesheet' media='print' />
-
 <script type="text/javascript">
     $(function () {
         {% for product_name,time_bill_info in all_products_time_bill.items  %}
@@ -57,11 +58,11 @@
                         },
                         {% endfor %}
                     ],
-                    center: [100, 80],
+                    center: [50, 20],
                     size: 100,
                     showInLegend: false,
                     dataLabels: {
-                        enabled: false
+                        enabled: false,
                     },
                 },
             ]

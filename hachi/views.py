@@ -206,10 +206,10 @@ def time_bill_by_echart(request):
             'operation_total_time_list' : operation_total_time_list,
         }
 
-        # all_operations_name = Operation.objects.get_all_operations_name()
-        all_operations_name = ['集群扩容','权限审批','问题排查','机器报修','集群搭建','其他'] 
+        all_operations_name = json.dumps(Operation.objects.get_all_operations_name(), ensure_ascii=False)
 
-        # return HttpResponse(json.dumps(all_operations_name)) 
+        # return HttpResponse(all_operations_name) 
+        # return HttpResponse(json.dumps(all_operations_name, ensure_ascii=False))
         # return HttpResponse(json.dumps(all_operation_time_bill)) 
         # return HttpResponse(json.dumps(all_products_time_bill))
         return render_to_response('time_bill_by_echart.html', {
@@ -219,8 +219,6 @@ def time_bill_by_echart(request):
         })
     except Exception as e: 
         return HttpResponse(returnJson(False, "%s in time_bill" % (e)))
-
-    return render_to_response('time_bill_by_echart.html')
 
 def test(request):
     """各种测试函数
@@ -271,7 +269,6 @@ def test(request):
         calendar_event.start_time = datetime.datetime.strptime("2015-06-16 04:00:00", '%Y-%m-%d %H:%M:%S')
         calendar_event.end_time = datetime.datetime.strptime('2015-06-16 06:00:00', '%Y-%m-%d %H:%M:%S')
         calendar_event.save()
-    """
     time_bill = TimeBill('2015-05-20', 5)
     product_time_bill = time_bill.get_product_time_bill(1)
     average_time_bill = TimeBill.get_average_time_bill(product_time_bill)
@@ -279,3 +276,5 @@ def test(request):
     # return HttpResponse(json.dumps(time_bill.get_weeklist()))
     # return HttpResponse(json.dumps(average_time_bill))
     return HttpResponse(json.dumps(operation_total_time_list))
+    """
+    # return HttpResponse(json.dumps(['陈欢', '姜虹']))

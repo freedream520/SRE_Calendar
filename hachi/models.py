@@ -44,7 +44,7 @@ class OperationManager(models.Manager):
 
         all_operations_name = []
         for operation in all_operations:
-            all_operations_name.append(u"operation.name")
+            all_operations_name.append(operation.name.encode('utf8'))
 
         return all_operations_name
 
