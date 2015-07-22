@@ -15,7 +15,7 @@
 </head>
 <body>
     <div class="container">
-        {% for product_name in all_products_time_bill  %}
+        {% for product_name in all_products_name  %}
         <div class="row">
             <div class="col-md-6" id="{{ product_name }}_bar" style="height:400px"> </div>
             <div class="col-md-6" id="{{ product_name }}_pie" style="height:400px"> </div>
@@ -48,7 +48,7 @@
                 var myChart = ec.init(document.getElementById('{{ product_name }}_bar')); 
                     option = {
                         title : {
-                            text: '{{ product_name }}展示图',
+                            text: '{{ product_name }}操作用时分布',
                             subtext: '用时分布',
                             x:'center'
                         },
@@ -59,7 +59,6 @@
                         legend: {
                             orient : 'vertical',
                             x : 'left',
-                            // data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
                             data: {{ all_operations_name|safe }}
                         },
                         calculable : true,
@@ -88,7 +87,6 @@
                         }
                     },
                     legend: {
-                        // data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
                         data: {{ all_operations_name|safe }}
                     },
                     toolbox: {

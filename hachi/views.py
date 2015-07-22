@@ -202,14 +202,19 @@ def time_bill_by_echart(request):
         operation_average_time_bill = TimeBill.get_average_time_bill(all_operation_time_bill)
         operation_total_time_list = TimeBill.get_operation_total_time_list(all_operation_time_bill)
 
-        all_products_time_bill['操作'] = {
+        all_products_time_bill['DPF组件'] = {
             'product_time_bill' : all_operation_time_bill,
             'product_average_time_bill' : operation_average_time_bill,
             'operation_total_time_list' : operation_total_time_list,
         }
 
         all_operations_name = json.dumps(Operation.objects.get_all_operations_name(), ensure_ascii=False)
+        all_products_name = Product.objects.get_all_products_name()
+        all_products_name.remove('学习')
+        all_products_name.insert(0, 'DPF组件')
 
+        # return HttpResponse(all_products_name) 
+        # return HttpResponse(json.dumps(all_products_name, ensure_ascii=False))
         # return HttpResponse(all_operations_name) 
         # return HttpResponse(json.dumps(all_operations_name, ensure_ascii=False))
         # return HttpResponse(json.dumps(all_operation_time_bill)) 
@@ -217,6 +222,7 @@ def time_bill_by_echart(request):
         return render_to_response('time_bill_by_echart.html', {
             'weeklist' : weeklist, 
             'all_operations_name' : all_operations_name,
+            'all_products_name' : all_products_name,
             'all_products_time_bill' : all_products_time_bill, 
         })
     except Exception as e: 

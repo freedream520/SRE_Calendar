@@ -22,6 +22,18 @@ class ProductManager(models.Manager):
 
         return all_products_id 
 
+    def get_all_products_name(self):
+        """返回所有Product的Name
+        """
+        all_products = Product.objects.all()
+
+        all_products_name = []
+        for product in all_products:
+            all_products_name.append(product.name.encode('utf8'))
+
+        return all_products_name 
+
+
 class Product(models.Model):
     """Product产品线
     """
